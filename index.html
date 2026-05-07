@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouncing Ball</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #10181f; /* Default dark theme background */
+            font-family: system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .instructions {
+            margin-top: 10vh;
+            color: #ffffff;
+            font-size: clamp(20px, 4vw, 32px);
+            font-weight: 500;
+            opacity: 0.8;
+            text-align: center;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 20vh;
+            box-sizing: border-box;
+        }
+
+        .ball {
+            width: clamp(80px, 15vw, 150px);
+            height: clamp(80px, 15vw, 150px);
+            background: radial-gradient(circle at 30% 30%, #4dd8d3, #00b7af); /* Default primary color with gradient */
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow:
+                0 15px 35px rgba(0, 183, 175, 0.4),
+                inset -15px -15px 30px rgba(0, 0, 0, 0.2);
+            -webkit-tap-highlight-color: transparent;
+            /* Subtle hover effect */
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        .ball:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+
+        .ball:active {
+            transform: scale(0.95);
+        }
+
+        /* Natural bouncing animation using keyframes */
+        @keyframes bounce {
+            0%   { transform: translateY(0) scale(1, 1); }
+            10%  { transform: translateY(5px) scale(1.1, 0.9); } /* slight squash on start */
+            30%  { transform: translateY(-35vh) scale(0.95, 1.05); } /* peak */
+            50%  { transform: translateY(0) scale(1, 1); } /* ground */
+            55%  { transform: translateY(5px) scale(1.1, 0.9); } /* squash */
+            70%  { transform: translateY(-15vh) scale(0.98, 1.02); } /* second peak */
+            85%  { transform: translateY(0) scale(1, 1); } /* ground */
+            90%  { transform: translateY(2px) scale(1.05, 0.95); } /* minor squash */
+            95%  { transform: translateY(-5vh) scale(1, 1); } /* third peak */
+            100% { transform: translateY(0) scale(1, 1); } /* rest */
+        }
+
+        .is-bouncing {
+            animation: bounce 1.4s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+        }
+
+        /* Floor shadow effect */
+        .shadow {
+            position: absolute;
+            bottom: 20vh;
+            width: clamp(60px, 12vw, 120px);
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+
+        @keyframes shadow-bounce {
+            0%   { transform: scale(1); opacity: 0.5; }
+            10%  { transform: scale(1.1); opacity: 0.6; }
+            30%  { transform: scale(0.4); opacity: 0.1; }
+            50%  { transform: scale(1); opacity: 0.5; }
+            55%  { transform: scale(1.1); opacity: 0.6; }
+            70%  { transform: scale(0.6); opacity: 0.2; }
+            85%  { transform: scale(1); opacity: 0.5; }
+            90%  { transform: scale(1.05); opacity: 0.55; }
+            95%  { transform: scale(0.8); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        .is-bouncing-shadow {
+            animation: shadow-bounce 1.4s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">Click the ball to bounce</div>
+    <div class="container">
+        <div class="shadow" id="shadow"></div>
+        <div class="ball" id="ball"></div>
+    </div>
+
+    <script>
+        const ball = document.getElementById('ball');
+        const shadow = document.getElementById('shadow');
+
+        function triggerBounce() {
+            // Remove the animation classes to allow re-triggering
+            ball.classList.remove('is-bouncing');
+            shadow.classList.remove('is-bouncing-shadow');
+
+            // Force a browser reflow so the animation restarts properly
+            void ball.offsetWidth;
+
+            // Add the animation classes back
+            ball.classList.add('is-bouncing');
+            shadow.classList.add('is-bouncing-shadow');
+        }
+
+        // Trigger on click/tap
+        ball.addEventListener('click', triggerBounce);
+
+        // Optional: trigger on touch for better mobile responsiveness
+        ball.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent double firing from touch + click
+            triggerBounce();
+        });
+    </script>
+</body>
+</html>
